@@ -44,7 +44,7 @@ namespace AOPT {
         double fy = _function->evaluate(y);
 
         // Check convexity condition for several values of theta between 0 and 1
-        for (int i = 0; i <= n_evals; ++i) {
+        for (int i = 1; i <= n_evals; ++i) {
             double theta = static_cast<double>(i) / n_evals; // θ ranges from 0 to 1
             Vec z = theta * x + (1.0 - theta) * y;           // Compute convex combination of x and y
             double fz = _function->evaluate(z);              // Evaluate function at point z
