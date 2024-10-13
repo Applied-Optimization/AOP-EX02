@@ -30,36 +30,37 @@ namespace AOPT {
          * \param n_evals the number of evaluations/samples tested on the
          *        line between the two points on the function */
         static bool isConvex(FunctionBase* _function, const double min = -1000., const double max = 1000., const int n_evals = 10) {
-    const int n = _function->n_unknowns(); // Dimensionality of the function domain
-    RandomNumberGenerator rng(min, max);   // Random number generator for generating test points
+            const int n = _function->n_unknowns(); // Dimensionality of the function domain
+            RandomNumberGenerator rng(min, max);   // Random number generator for generating test points
 
-    const int max_sampling_points = 1000000;  // Max number of random points to test
-    for (int sample = 0; sample < max_sampling_points; ++sample) {
-        // Generate two random points x and y in the domain
-        Vec x = rng.get_random_nd_vector(n);
-        Vec y = rng.get_random_nd_vector(n);
+            const int max_sampling_points = 1000000;  // Max number of random points to test
+            for (int sample = 0; sample < max_sampling_points; ++sample) {
+                // Generate two random points x and y in the domain
+                Vec x = rng.get_random_nd_vector(n);
+                Vec y = rng.get_random_nd_vector(n);
 
-        // Evaluate function at points x and y
-        double fx = _function->evaluate(x);
-        double fy = _function->evaluate(y);
+                // Evaluate function at points x and y
+                double fx = _function->eval_f(x);
+                double fy = _function->eval_f(y);
 
-        // Check convexity condition for several values of theta between 0 and 1
-        for (int i = 1; i <= n_evals; ++i) {
-            double theta = static_cast<double>(i) / n_evals; // θ ranges from 0 to 1
-            Vec z = theta * x + (1.0 - theta) * y;           // Compute convex combination of x and y
-            double fz = _function->evaluate(z);              // Evaluate function at point z
+                // Check convexity condition for several values of theta between 0 and 1
+                for (int i = 1; i <= n_evals; ++i) {
+                    double theta = static_cast<double>(i) / n_evals; // θ ranges from 0 to 1
+                    Vec z = theta * x + (1.0 - theta) * y;           // Compute convex combination of x and y
+                    double fz = _function->eval_f(z);              // Evaluate function at point z
 
-            // Check convexity condition: f(z) <= θ f(x) + (1-θ) f(y)
-            if (fz > theta * fx + (1.0 - theta) * fy) {
-                // Print path info for debugging and return false as counterexample is found
-                printPathInfo(x, y, z, theta);
-                return false;
+                    // Check convexity condition: f(z) <= θ f(x) + (1-θ) f(y)
+                    if (fz > theta * fx + (1.0 - theta) * fy) {
+                        // Print path info for debugging and return false as counterexample is found
+                        printPathInfo(x, y, z, theta);
+                        return false;
+                    }
+                }
             }
-        }
-    }
 
-    // No counterexample found, so we assume the function is convex
-    return true;
+            // No counterexample found, so we assume the function is convex
+            std::cout << "The function is probably convex." << std::endl;
+            return true;
 }
 
 
